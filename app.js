@@ -1,13 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const routes = require('./routes/users');
+const routes = require('./routes/router');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(routes);
 
 app.use((req, res, next) => {
@@ -21,14 +18,14 @@ app.use((req, res, next) => {
 // Данный адрес взят после подключения через терминал с помощью mongosh:
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
-    console.log('connected');
+    console.log('БД подключена');
   })
   .catch(() => {
-    console.log('error db connection');
+    console.log('Не удалось подключиться к БД');
   });
 
 app.get('/', (req, res) => {
-  res.send('hello !');
+  res.send('Вывод чего-то на страницу...');
 });
 
 app.listen(PORT, () => {

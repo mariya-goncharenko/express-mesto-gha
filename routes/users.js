@@ -9,14 +9,14 @@ const {
 } = require('../controllers/users');
 
 // Находит всех пользователей:
-router.get('/users', getUsers);
+router.get('/', getUsers);
 // Находит пользователя по _id:
-router.get('/users/:userId', getUserId);
+router.get('/:userId', getUserId);
 // Cоздаёт пользователя:
-router.post('/users', createUser);
+router.post('/', createUser);
 // Обновление аватара:
-router.patch('/users/me', updateUserProfile);
+router.patch('/me', updateUserProfile);
 // Обновление аватара:
-router.patch('/users/me/avatar', updateUserAvatar);
+router.patch('/me/avatar', updateUserAvatar);
 
 module.exports = router;

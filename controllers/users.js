@@ -5,7 +5,7 @@ module.exports.getUsers = (req, res) => {
   User
     .find({})
     .then((users) => res.status(200).send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
 };
 
 // Находим пользователя по ID:
@@ -20,7 +20,7 @@ module.exports.getUserId = (req, res) => {
           .status(404)
           .send({ message: 'Пользователь по указанному _id не найден.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -39,7 +39,7 @@ module.exports.createUser = (req, res) => {
             message: 'Переданы некорректные данные при создании пользователя.',
           });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -60,7 +60,7 @@ module.exports.updateUserProfile = (req, res) => {
           message: 'Пользователь по указанному _id не найден.',
         });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -81,7 +81,7 @@ module.exports.updateUserAvatar = (req, res) => {
           message: 'Пользователь с указанным _id не найден. ',
         });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
