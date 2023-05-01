@@ -1,19 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 const routes = require('./routes/router');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(routes);
+app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
+    _id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
   };
 
   next();
 });
+
+app.use(routes);
 
 // Данный адрес взят после подключения через терминал с помощью mongosh:
 mongoose
