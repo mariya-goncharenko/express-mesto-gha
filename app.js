@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 // Данный адрес взят после подключения через терминал с помощью mongosh:
 mongoose
-  .connect('mongodb:/localhost:27017/mestodb')
+  .connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
     console.log('БД подключена');
   })
