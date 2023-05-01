@@ -8,8 +8,6 @@ const app = express();
 
 app.use(express.json());
 
-app.use(routes);
-
 app.use((req, res, next) => {
   req.user = {
     _id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
@@ -17,6 +15,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(routes);
 
 // Данный адрес взят после подключения через терминал с помощью mongosh:
 mongoose

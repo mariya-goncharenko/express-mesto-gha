@@ -3,7 +3,6 @@ const Card = require('../models/card');
 // Находим все карточки:
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .populate(['owner', 'likes'])
     .then((cards) => res.status(200).send(cards))
     .catch(() => res
       .status(500)
