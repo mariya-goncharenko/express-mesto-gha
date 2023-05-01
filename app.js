@@ -12,13 +12,14 @@ app.use(routes);
 
 app.use((req, res, next) => {
   req.user = {
-    id: '', // ID пользователя из постмана.
+    id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
   };
 
   next();
 });
 
-mongoose.connect('mongodb://localhost:27017/?directConnection=true')
+// Данный адрес взят после подключения через терминал с помощью mongosh:
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
     console.log('connected');
   })
