@@ -12,7 +12,7 @@ app.use(routes);
 
 app.use((req, res, next) => {
   req.user = {
-    id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
+    _id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
   };
 
   next();
