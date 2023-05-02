@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 const routes = require('./routes/router');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
+app.use(helmet());
+app.disable('x-powered-by');
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -27,10 +30,6 @@ mongoose
   .catch(() => {
     console.log('Не удалось подключиться к БД');
   });
-
-app.get('/', (req, res) => {
-  res.send('Вывод чего-то на страницу...');
-});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
