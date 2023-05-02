@@ -14,19 +14,19 @@ module.exports.getUserId = (req, res) => {
     .findById(req.params.userId)
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        return res
-          .status(404)
-          .send({
-            message: 'Пользователь c указанным _id не найден',
-          });
-      }
-
       if (err.name === 'CastError') {
         return res
           .status(400)
           .send({
             message: 'Переданы некорректные данные при поиске пользователя',
+          });
+      }
+
+      if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(404)
+          .send({
+            message: 'Пользователь c указанным _id не найден',
           });
       }
 
@@ -60,7 +60,7 @@ module.exports.updateUserProfile = (req, res) => {
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res
           .status(400)
           .send({
@@ -68,7 +68,7 @@ module.exports.updateUserProfile = (req, res) => {
           });
       }
 
-      if (err.name === 'NotFound') {
+      if (err.name === 'DocumentNotFoundError') {
         return res
           .status(404)
           .send({
@@ -86,7 +86,7 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res
           .status(400)
           .send({
@@ -94,7 +94,7 @@ module.exports.updateUserAvatar = (req, res) => {
           });
       }
 
-      if (err.name === 'NotFound') {
+      if (err.name === 'DocumentNotFoundError') {
         return res
           .status(404)
           .send({
