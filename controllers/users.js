@@ -10,7 +10,7 @@ module.exports.getUsers = (req, res) => {
 // Находим пользователя по ID:
 module.exports.getUserId = (req, res) => {
   User
-    .orFail(new Error = 'NotFoundError')
+    .orFail(new Error('NotFoundError'))
     .findById(req.params.userId)
     .then((user) => res.status(200).send(user))
     .catch((err) => {
