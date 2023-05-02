@@ -11,7 +11,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserId = (req, res) => {
   User
     .findById(req.params.userId)
-    .orFail(new Error('NotFoundError'))
+    .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -22,7 +22,7 @@ module.exports.getUserId = (req, res) => {
           });
       }
 
-      if (err.name === 'NotFoundError') {
+      if (err.name === 'DocumentNotFoundError') {
         return res
           .status(404)
           .send({
