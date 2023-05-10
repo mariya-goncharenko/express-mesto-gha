@@ -1,10 +1,17 @@
+// Схема пользователя:
 const User = require('../models/user');
 
+// Ошибки:
+const BadRequest = require('../errors/BadRequest'); // 400
+const NotFound = require('../errors/NotFound'); // 404
+
+
 // Находим всех пользователей:
-module.exports.getUsers = (req, res) => {
-  User.find({})
+module.exports.getUsers = (req, res, next) => {
+  User
+    .find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
+    .catch(next);
 };
 
 // Находим пользователя по ID:
