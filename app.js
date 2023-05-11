@@ -11,6 +11,8 @@ app.use(helmet());
 app.disable('x-powered-by');
 app.use(express.json());
 
+
+
 app.use((req, res, next) => {
   req.user = {
     _id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
@@ -19,6 +21,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use(routes);
 
 // Данный адрес взят после подключения через терминал с помощью mongosh:
