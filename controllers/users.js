@@ -2,9 +2,8 @@
 const User = require('../models/user');
 
 // Ошибки:
-const BadRequest = require('../errors/BadRequest'); // 400
-const NotFound = require('../errors/NotFound'); // 404
-
+const BadRequest = require('../errors/BadRequestError'); // 400
+const NotFound = require('../errors/NotFoundError'); // 404
 
 // Находим всех пользователей:
 module.exports.getUsers = (req, res, next) => {
@@ -15,29 +14,24 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 // Находим пользователя по ID:
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   User
     .findById(req.params.userId)
-    .orFail()
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь c указанным _id не найден');
+      }
+      res.status(200)
+        .send(user);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(400)
-          .send({
-            message: 'Переданы некорректные данные при поиске пользователя',
-          });
+        next(BadRequest('Переданы некорректные данные при поиске пользователя'));
+      } else if (err.message === 'NotFound') {
+        next(new NotFound('Пользователь c указанным _id не найден'));
+      } else {
+        next(err);
       }
-
-      if (err.name === 'DocumentNotFoundError') {
-        return res
-          .status(404)
-          .send({
-            message: 'Пользователь c указанным _id не найден',
-          });
-      }
-
-      return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -58,57 +52,38 @@ module.exports.createUser = (req, res) => {
 };
 
 // Обновление данных пользователя:
-module.exports.updateUserProfile = (req, res) => {
+module.exports.updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.status(200).send(user);
+    })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res
-          .status(400)
-          .send({
-            message: 'Переданы некорректные данные при обновлении профиля',
-          });
+        next(BadRequest('Переданы некорректные данные при обновлении профиля'));
+      } else {
+        next(err);
       }
-
-      if (err.name === 'DocumentNotFoundError') {
-        return res
-          .status(404)
-          .send({
-            message: 'Пользователь не найден',
-          });
-      }
-
-      return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
 // Обновление аватара пользователя:
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res
-          .status(400)
-          .send({
-            message: 'Переданы некорректные данные при обновлении аватара',
-          });
+        next(new BadRequest('Переданы некорректные данные при обновлении аватара'));
+      } else {
+        next(err);
       }
-
-      if (err.name === 'DocumentNotFoundError') {
-        return res
-          .status(404)
-          .send({
-            message: 'Пользователь не найден',
-          });
-      }
-
-      return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
 };

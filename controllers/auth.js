@@ -2,35 +2,54 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const BadRequest = require('../errors/BadRequestError');
+const Conflict = require('../errors/ConflictError');
 
-module.exports.register = (req, res) => {
-  bcrypt.hash(req.body.password, 10)
+module.exports.createUser = (req, res, next) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      email: req.body.email,
+      name,
+      about,
+      avatar,
+      email,
       password: hash,
     }))
-    .then((user) => {
+    .then(() => {
       res.status(201).send({
-        _id: user._id,
-        email: user.email,
+        name,
+        about,
+        avatar,
+        email,
       });
     })
     .catch((err) => {
-      res.status(400).send(err);
+      if (err.code === 11000) {
+        return next(new Conflict('Пользователь с такими данными уже существует'));
+      }
+      if (err.name === 'ValidationError') {
+        return next(new BadRequest('Данные пользователя введены некоректно'));
+      }
+      return next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User
     .findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
+        token: jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' }),
       });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };

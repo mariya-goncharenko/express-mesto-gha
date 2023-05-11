@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 
 const routes = require('./routes/router');
+const { createUser, login } = require('./controllers/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -11,13 +12,17 @@ app.use(helmet());
 app.disable('x-powered-by');
 app.use(express.json());
 
-
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '644f61b691adf64cad700c6f', // ID пользователя из mongo.
-  };
-
+app.use((err, req, res, next) => {
+  const {
+    status = 500,
+    message,
+  } = err;
+  res.status(status)
+    .send({
+      message: status === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
   next();
 });
 
