@@ -107,7 +107,8 @@ module.exports.getUserId = (req, res, next) => {
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const { userId } = req.user;
 
-  User.findById(userId)
+  User
+    .findById(userId)
     .then((user) => {
       if (user) return res.send({ user });
 
