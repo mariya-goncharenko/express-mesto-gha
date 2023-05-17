@@ -1,45 +1,47 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
-const routes = require('./routes/router');
-const { createUser, login } = require('./controllers/auth');
+const limiter = require('./middlewares/rateLimiter');
 
+const routeSignup = require('./routes/signup');
+const routeSignin = require('./routes/signin');
+
+const auth = require('./middlewares/auth');
+
+const routeUsers = require('./routes/users');
+const routeCards = require('./routes/cards');
+
+const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/errorHandler');
+
+const URL = 'mongodb://127.0.0.1:27017/mestodb';
 const { PORT = 3000 } = process.env;
+
+mongoose.set('strictQuery', true);
+mongoose.connect(URL);
+
 const app = express();
 
 app.use(helmet());
-app.disable('x-powered-by');
-app.use(express.json());
 
-app.use((err, req, res, next) => {
-  const {
-    status = 500,
-    message,
-  } = err;
-  res.status(status)
-    .send({
-      message: status === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
-app.use(routes);
+app.use(limiter);
 
-// Данный адрес взят после подключения через терминал с помощью mongosh:
-mongoose
-  .connect('mongodb://127.0.0.1:27017/mestodb')
-  .then(() => {
-    console.log('БД подключена');
-  })
-  .catch(() => {
-    console.log('Не удалось подключиться к БД');
-  });
+app.use('/', routeSignup);
+app.use('/', routeSignin);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+app.use(auth);
+
+app.use('/users', routeUsers);
+app.use('/cards', routeCards);
+
+app.use((req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
+app.use(errors());
+app.use(errorHandler);
+
+app.listen(PORT);
