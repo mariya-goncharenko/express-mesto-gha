@@ -5,7 +5,7 @@ const { URL_REGEX } = require('../utils/constants');
 
 const {
   getUsers,
-  getUserId,
+  getUserById,
   getCurrentUserInfo,
   updateUserProfile,
   updateUserAvatar,
@@ -21,7 +21,7 @@ router.get(
       id: Joi.string().length(24).hex().required(),
     }),
   }),
-  getUserId,
+  getUserById,
 );
 // Cоздаёт пользователя:
 router.get('/me', getCurrentUserInfo);
