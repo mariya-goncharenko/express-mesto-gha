@@ -21,7 +21,15 @@ const URL = 'mongodb://127.0.0.1:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
 mongoose.set('strictQuery', true);
-mongoose.connect(URL);
+
+mongoose
+  .connect(URL)
+  .then(() => {
+    console.log('БД подключена');
+  })
+  .catch(() => {
+    console.log('Не удалось подключиться к БД');
+  });
 
 const app = express();
 
