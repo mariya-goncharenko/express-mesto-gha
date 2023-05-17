@@ -1,7 +1,9 @@
 const rateLimiter = require('express-rate-limit');
 
-module.exports.limiter = rateLimiter({
-  max: 150,
+const limiter = rateLimiter({
+  max: 160,
   windowMS: 55000,
-  message: 'Количество запросов на сервер превысило лимит. Пожалуйста, попробуйте зайти позже.',
+  message: 'В настоящий момент превышено количество запросов на сервер. Пожалуйста, попробуйте повторить позже',
 });
+
+module.exports = limiter;
