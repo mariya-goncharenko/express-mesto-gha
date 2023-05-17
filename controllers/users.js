@@ -84,22 +84,21 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 // Находим пользователя по ID:
-module.exports.getUserId = (req, res, next) => {
-  const { id } = req.params;
-
-  User.findById(id)
-
+module.exports.getUserById = (req, res, next) => {
+  const { userId } = req.params;
+  User.findById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь с таким id не найден');
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
-      } else {
-        next(err);
+        next(new BadRequestError('Передан некорретный Id'));
+        return;
       }
+      next(err);
     });
 };
 

@@ -6,7 +6,6 @@ const { URL_REGEX } = require('../utils/constants');
 const {
   getUsers,
   getUserById,
-  getCurrentUserInfo,
   updateUserProfile,
   updateUserAvatar,
 } = require('../controllers/users');
@@ -24,7 +23,7 @@ router.get(
   getUserById,
 );
 // Cоздаёт пользователя:
-router.get('/me', getCurrentUserInfo);
+router.get('/me', getUserById);
 // Обновление аватара:
 router.patch(
   '/me',
