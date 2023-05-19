@@ -1,8 +1,7 @@
-const express = require('express');
+const router = require('express').Router();
 
-const router = express.Router();
-const routeSignup = require('./signup');
 const routeSignin = require('./signin');
+const routeSignup = require('./signup');
 const routeUsers = require('./users');
 const routeCards = require('./cards');
 

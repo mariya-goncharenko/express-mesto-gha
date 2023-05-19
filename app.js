@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 
-const routes = require('./routes/index');
-
 const limiter = require('./middlewares/rateLimiter');
 
 const auth = require('./middlewares/auth');
@@ -15,16 +13,11 @@ const errorHandler = require('./middlewares/errorHandler');
 const URL = 'mongodb://127.0.0.1:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
+const routes = require('./routes/index');
+
 mongoose.set('strictQuery', true);
 
-mongoose
-  .connect(URL)
-  .then(() => {
-    console.log('БД подключена');
-  })
-  .catch(() => {
-    console.log('Не удалось подключиться к БД');
-  });
+mongoose.connect(URL);
 
 const app = express();
 
@@ -35,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(limiter);
 
-app.use(routes);
+app.use('/', routes);
 
 app.use(auth);
 
