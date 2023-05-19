@@ -40,20 +40,19 @@ module.exports.registrationUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(
+        return next(
           new ConflictError(
             'Пользователь с таким электронным адресом уже зарегистрирован',
           ),
         );
-      } else if (err.name === 'ValidationError') {
-        next(
+      } if (err.name === 'ValidationError') {
+        return next(
           new BadRequestError(
             'Переданы некорректные данные при регистрации пользователя',
           ),
         );
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
@@ -68,7 +67,7 @@ module.exports.login = (req, res, next) => {
           expiresIn: '7d',
         });
 
-        return res.send({ _id: token });
+        return res.send({ token });
       }
 
       throw new UnauthorizedError('Неправильные почта или пароль');
@@ -88,37 +87,38 @@ module.exports.getUserId = (req, res, next) => {
   const { id } = req.params;
 
   User.findById(id)
-
     .then((user) => {
-      if (user) return res.send({ user });
+      if (!user) {
+        throw new NotFoundError('Пользователь с таким id не найден');
+      }
 
-      throw new NotFoundError('Пользователь с таким id не найден');
+      return res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
-      } else {
-        next(err);
+        return next(new BadRequestError('Передан некорректный id'));
       }
+      return next(err);
     });
 };
 
-// Поиск пользователя пользователя:
+// Поиск текущего пользователя:
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const { userId } = req.user;
 
   User.findById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
+      if (!user) {
+        throw new NotFoundError('Пользователь с таким id не найден');
+      }
 
-      throw new NotFoundError('Пользователь с таким id не найден');
+      return res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
-      } else {
-        next(err);
+        return next(new BadRequestError('Передан некорректный id'));
       }
+      return next(err);
     });
 };
 
@@ -139,20 +139,21 @@ module.exports.updateUserProfile = (req, res, next) => {
     },
   )
     .then((user) => {
-      if (user) return res.send({ user });
+      if (!user) {
+        throw new NotFoundError('Пользователь с таким id не найден');
+      }
 
-      throw new NotFoundError('Пользователь с таким id не найден');
+      return res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(
+        return next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля',
           ),
         );
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
@@ -172,19 +173,20 @@ module.exports.updateUserAvatar = (req, res, next) => {
     },
   )
     .then((user) => {
-      if (user) return res.send({ user });
+      if (!user) {
+        throw new NotFoundError('Пользователь с таким id не найден');
+      }
 
-      throw new NotFoundError('Пользователь с таким id не найден');
+      return res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(
+        return next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля пользователя',
           ),
         );
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
