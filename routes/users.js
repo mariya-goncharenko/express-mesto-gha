@@ -6,6 +6,7 @@ const { URL_REGEX } = require('../utils/constants');
 const {
   getUsers,
   getUserById,
+  getCurrentUserInfo,
   updateUserProfile,
   updateUserAvatar,
 } = require('../controllers/users');
@@ -23,8 +24,20 @@ router.get(
   getUserById,
 );
 // Cоздаёт пользователя:
-router.get('/me', getUserById);
-// Обновление аватара:
+router.get('/', getUsers);
+// Находит пользователя по _id:
+router.get(
+  '/:id',
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().length(24).hex().required(),
+    }),
+  }),
+  getUserById,
+);
+// Получение информации о текущем пользователе:
+router.patch('/me', getCurrentUserInfo);
+// Обновление профиля:
 router.patch(
   '/me',
   celebrate({

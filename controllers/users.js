@@ -102,6 +102,26 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
+// Поиск пользователя пользователя:
+module.exports.getCurrentUserInfo = (req, res, next) => {
+  const { userId } = req.user;
+
+  User
+    .findById(userId)
+    .then((user) => {
+      if (user) return res.send({ user });
+
+      throw new NotFoundError('Пользователь с таким id не найден');
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
+};
+
 // Обновление данных пользователя:
 module.exports.updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
