@@ -2,7 +2,6 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const { URL_REGEX } = require('../utils/constants');
-
 const {
   getUsers,
   getUserById,
@@ -11,52 +10,28 @@ const {
   updateUserAvatar,
 } = require('../controllers/users');
 
-// Находит всех пользователей:
 router.get('/', getUsers);
-// Находит пользователя по _id:
-router.get(
-  '/:id',
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().length(24).hex().required(),
-    }),
+router.get('/me', getCurrentUserInfo);
+
+router.get('/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().length(24).hex().required(),
   }),
-  getUserById,
-);
-// Cоздаёт пользователя:
-router.get('/', getUsers);
-// Находит пользователя по _id:
-router.get(
-  '/:id',
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().length(24).hex().required(),
-    }),
+}), getUserById);
+
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
   }),
-  getUserById,
-);
-// Получение информации о текущем пользователе:
-router.patch('/me', getCurrentUserInfo);
-// Обновление профиля:
-router.patch(
-  '/me',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-    }),
+}), updateUserProfile);
+
+router.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi
+      .string()
+      .pattern(URL_REGEX),
   }),
-  updateUserProfile,
-);
-// Обновление аватара:
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().pattern(URL_REGEX),
-    }),
-  }),
-  updateUserAvatar,
-);
+}), updateUserAvatar);
 
 module.exports = router;
