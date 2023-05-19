@@ -31,11 +31,13 @@ const cardSchema = new Schema(
       required: true,
     },
 
-    likes: [{
-      type: ObjectId,
-      ref: 'user',
-      default: [],
-    }],
+    likes: [
+      {
+        type: ObjectId,
+        ref: 'user',
+        default: [],
+      },
+    ],
 
     createdAt: {
       type: Date,

@@ -6,7 +6,8 @@ const BadRequestError = require('../errors/BadRequestError');
 
 // Находим все карточки:
 module.exports.getCards = (req, res, next) => {
-  Card.find({})
+  Card
+    .find({})
     .find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
@@ -23,7 +24,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+        next(
+          new BadRequestError(
+            'Переданы некорректные данные при создании карточки',
+          ),
+        );
       } else {
         next(err);
       }
@@ -86,7 +91,11 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при добавлении лайка карточке'));
+        next(
+          new BadRequestError(
+            'Переданы некорректные данные при добавлении лайка карточке',
+          ),
+        );
       } else {
         next(err);
       }
@@ -117,7 +126,11 @@ module.exports.deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при снятии лайка карточки'));
+        next(
+          new BadRequestError(
+            'Переданы некорректные данные при снятии лайка карточки',
+          ),
+        );
       } else {
         next(err);
       }
