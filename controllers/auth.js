@@ -8,7 +8,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 
-// регистрация пользователя
+// Регистрация пользователя:
 module.exports.registrationUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
@@ -53,7 +53,7 @@ module.exports.registrationUser = (req, res, next) => {
     });
 };
 
-// логин пользователя
+// Авторизация пользователя:
 module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;
 
