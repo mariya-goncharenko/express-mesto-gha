@@ -37,17 +37,13 @@ module.exports.getCurrentUserInfo = (req, res, next) => {
   User
     .findById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь c указанным _id не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
-      } else {
-        next(err);
+      if (user) {
+        return res.send({ user });
       }
-    });
+
+      throw new NotFoundError('Пользователь с указанным _id не найден');
+    })
+    .catch(next);
 };
 
 // Обновление данных пользователя:
@@ -73,7 +69,7 @@ module.exports.updateUserProfile = (req, res, next) => {
       throw new NotFoundError('Пользователь c указанным _id не найден');
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля',
@@ -107,7 +103,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       throw new NotFoundError('Пользователь c указанным _id не найден');
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля пользователя',

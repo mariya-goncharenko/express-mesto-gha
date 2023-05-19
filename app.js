@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
 const limiter = require('./middlewares/rateLimiter');
@@ -22,21 +21,14 @@ const { PORT = 3000 } = process.env;
 
 mongoose.set('strictQuery', true);
 
-mongoose
-  .connect(URL)
-  .then(() => {
-    console.log('БД подключена');
-  })
-  .catch(() => {
-    console.log('Не удалось подключиться к БД');
-  });
+mongoose.connect(URL);
 
 const app = express();
 
 app.use(helmet());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(limiter);
 

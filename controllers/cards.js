@@ -8,7 +8,6 @@ const BadRequestError = require('../errors/BadRequestError');
 module.exports.getCards = (req, res, next) => {
   Card
     .find({})
-    .find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
     .catch(next);
@@ -90,7 +89,7 @@ module.exports.likeCard = (req, res, next) => {
       throw new NotFoundError('Карточка с указанным id не найдена');
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при добавлении лайка карточке',
@@ -125,7 +124,7 @@ module.exports.deleteLikeCard = (req, res, next) => {
       throw new NotFoundError('Данные по указанному id не найдены');
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при снятии лайка карточки',
