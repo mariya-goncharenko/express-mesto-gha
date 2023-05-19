@@ -6,7 +6,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const User = require('../models/user');
-const BadRequestError = require('../errors/BadRequestError');
+const InaccurateDataError = require('../errors/InaccurateDataError');
 
 // регистрация пользователя
 function registrationUser(req, res, next) {
@@ -41,7 +41,7 @@ function registrationUser(req, res, next) {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким электронным адресом уже зарегистрирован'));
       } else if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при регистрации пользователя'));
+        next(new InaccurateDataError('Переданы некорректные данные при регистрации пользователя'));
       } else {
         next(err);
       }
@@ -92,7 +92,7 @@ function getUserId(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
+        next(new InaccurateDataError('Передан некорректный id'));
       } else {
         next(err);
       }
@@ -112,7 +112,7 @@ function getCurrentUserInfo(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id'));
+        next(new InaccurateDataError('Передан некорректный id'));
       } else {
         next(err);
       }
@@ -143,7 +143,7 @@ function editProfileUserInfo(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        next(new InaccurateDataError('Переданы некорректные данные при обновлении профиля'));
       } else {
         next(err);
       }
@@ -173,7 +173,7 @@ function updateProfileUserAvatar(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля пользователя'));
+        next(new InaccurateDataError('Переданы некорректные данные при обновлении профиля пользователя'));
       } else {
         next(err);
       }

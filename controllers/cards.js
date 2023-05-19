@@ -2,19 +2,19 @@ const Card = require('../models/card');
 
 const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
+const InaccurateDataError = require('../errors/InaccurateDataError');
 
-// Находим все карточки:
-module.exports.getCards = (req, res, next) => {
-  Card.find({})
+// Все карточки:
+function getInitialCards(_, res, next) {
+  Card
     .find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
     .catch(next);
-};
+}
 
-// Создаем карточку:
-module.exports.createCard = (req, res, next) => {
+// Создание новой карточки:
+function addNewCard(req, res, next) {
   const { name, link } = req.body;
   const { userId } = req.user;
 
@@ -23,15 +23,15 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+        next(new InaccurateDataError('Переданы некорректные данные при создании карточки'));
       } else {
         next(err);
       }
     });
-};
+}
 
-// Удаляем карточку:
-module.exports.deleteCard = (req, res, next) => {
+// Удаление карточки:
+function deleteCard(req, res, next) {
   const { id: cardId } = req.params;
   const { userId } = req.user;
 
@@ -60,10 +60,10 @@ module.exports.deleteCard = (req, res, next) => {
       res.send({ data: deletedCard });
     })
     .catch(next);
-};
+}
 
-// Ставим лайк на карточку:
-module.exports.likeCard = (req, res, next) => {
+// Лайк на карточки:
+function addLike(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
@@ -86,15 +86,15 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при добавлении лайка карточке'));
+        next(new InaccurateDataError('Переданы некорректные данные при добавлении лайка карточке'));
       } else {
         next(err);
       }
     });
-};
+}
 
-// Убираем лайк с карточки:
-module.exports.deleteLikeCard = (req, res, next) => {
+// Удаление лайка с карточки:
+function removeLike(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
@@ -117,9 +117,17 @@ module.exports.deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при снятии лайка карточки'));
+        next(new InaccurateDataError('Переданы некорректные данные при снятии лайка карточки'));
       } else {
         next(err);
       }
     });
+}
+
+module.exports = {
+  getInitialCards,
+  addNewCard,
+  addLike,
+  removeLike,
+  deleteCard,
 };
