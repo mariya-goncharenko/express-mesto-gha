@@ -1,5 +1,4 @@
 const User = require('../models/user');
-
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 
@@ -10,70 +9,72 @@ module.exports.getUsers = (_, res, next) => {
     .catch(next);
 };
 
-// Находим конкретного пользователя по ID:
+// Общая функция для поиска пользователя по ID
+const findUserById = (id) => User.findById(id).then((user) => {
+  if (user) {
+    return user;
+  }
+  throw new NotFoundError('Пользователь с указанным _id не найден');
+});
+
+// Находим конкретного пользователя по ID
 module.exports.getUserId = (req, res, next) => {
   const { id } = req.params;
 
-  User
-    .findById(id)
+  findUserById(id)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь c указанным _id не найден');
+      res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
+      if (err instanceof BadRequestError) {
+        next(
+          new BadRequestError(
+            'Переданы некорректные данные при поиске пользователя',
+          ),
+        );
       } else {
         next(err);
       }
     });
 };
 
-// Поиск пользователя:
+// Поиск авторизованного пользователя
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const { userId } = req.user;
 
-  User
-    .findById(userId)
+  findUserById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь c указанным _id не найден');
+      res.send({ user });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
-// Обновление данных пользователя:
+// Общая функция для обновления данных пользователя
+const updateUserProfileData = (userId, updateData) => User.findByIdAndUpdate(userId, updateData, {
+  new: true,
+  runValidators: true,
+}).then((user) => {
+  if (user) {
+    return user;
+  }
+  throw new NotFoundError('Пользователь c указанным _id не найден');
+});
+
+// Обновление данных пользователя
 module.exports.updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   const { userId } = req.user;
+  const updateData = {
+    name,
+    about,
+  };
 
-  User
-    .findByIdAndUpdate(
-      userId,
-      {
-        name,
-        about,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    )
+  updateUserProfileData(userId, updateData)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь c указанным _id не найден');
+      res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof BadRequestError) {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля',
@@ -85,29 +86,20 @@ module.exports.updateUserProfile = (req, res, next) => {
     });
 };
 
-// Обновление аватара пользователя:
+// Обновление аватара пользователя
 module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const { userId } = req.user;
+  const updateData = {
+    avatar,
+  };
 
-  User
-    .findByIdAndUpdate(
-      userId,
-      {
-        avatar,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    )
+  updateUserProfileData(userId, updateData)
     .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь c указанным _id не найден');
+      res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof BadRequestError) {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля пользователя',

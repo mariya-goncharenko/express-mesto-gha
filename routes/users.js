@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 
-const { URL_REGEX } = require('../utils/constants');
+const userValidation = require('../validation/validation');
+
 const {
   getUsers,
   getUserId,
@@ -15,35 +15,10 @@ router.get('/', getUsers);
 // Находим пользователя:
 router.get('/me', getCurrentUserInfo);
 // Находит пользователя по _id:
-router.get(
-  '/:id',
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().length(24).hex().required(),
-    }),
-  }),
-  getUserId,
-);
+router.get('/:id', userValidation.getUserId, getUserId);
 // Обновление профиля:
-router.patch(
-  '/me',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-    }),
-  }),
-  updateUserProfile,
-);
+router.patch('/me', userValidation.updateUserProfile, updateUserProfile);
 // Обновление аватара:
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().pattern(URL_REGEX),
-    }),
-  }),
-  updateUserAvatar,
-);
+router.patch('/me/avatar', userValidation.updateUserAvatar, updateUserAvatar);
 
 module.exports = router;
