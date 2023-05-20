@@ -16,12 +16,11 @@ const routeCards = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
 
-const URL = 'mongodb://127.0.0.1:27017/mestodb';
-const { PORT = 3000 } = process.env;
+const config = require('./config');
 
 mongoose.set('strictQuery', true);
 
-mongoose.connect(URL);
+mongoose.connect(config.DB_URL);
 
 const app = express();
 
@@ -44,4 +43,4 @@ app.use((req, res, next) => next(new NotFoundError('Страницы по зап
 app.use(errors());
 app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(config.PORT);
