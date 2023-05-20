@@ -40,6 +40,35 @@ module.exports.deleteCard = (req, res, next) => {
   const { userId } = req.user;
 
   Card
+    .findOne({ _id: cardId, owner: userId })
+    .then((card) => {
+      if (!card) {
+        throw new ForbiddenError('У вас нет прав на удаление этой карточки');
+      }
+
+      return Card.deleteOne({ _id: cardId });
+    })
+    .then((result) => {
+      if (result.deletedCount === 0) {
+        throw new NotFoundError('Карточка не найдена или у вас нет прав на ее удаление');
+      }
+
+      res.send({ message: 'Карточка успешно удалена' });
+    })
+    .catch((err) => {
+      if (err.name === 'ForbiddenError') {
+        next(err);
+      } else {
+        next(err);
+      }
+    });
+};
+
+/* module.exports.deleteCard = (req, res, next) => {
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
+
+  Card
     .deleteOne({ _id: cardId, owner: userId })
     .then((result) => {
       if (result.deletedCount === 0) {
@@ -56,7 +85,7 @@ module.exports.deleteCard = (req, res, next) => {
     });
 };
 
-/* module.exports.deleteCard = (req, res, next) => {
+ module.exports.deleteCard = (req, res, next) => {
   const { id: cardId } = req.params;
   const { userId } = req.user;
 
