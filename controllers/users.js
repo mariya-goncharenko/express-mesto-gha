@@ -5,7 +5,8 @@ const BadRequestError = require('../errors/BadRequestError');
 
 // Находим всех пользователей:
 module.exports.getUsers = (_, res, next) => {
-  User.find({})
+  User
+    .find({})
     .then((users) => res.send({ users }))
     .catch(next);
 };

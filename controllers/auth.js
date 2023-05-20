@@ -51,7 +51,8 @@ module.exports.registrationUser = (req, res, next) => {
 module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  User
+    .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
       const token = jwt.sign({ userId }, SECRET_SIGNING_KEY, {
         expiresIn: '7d',
