@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 
+const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 
@@ -42,6 +43,27 @@ module.exports.deleteCard = (req, res, next) => {
     .deleteOne({ _id: cardId, owner: userId })
     .then((result) => {
       if (result.deletedCount === 0) {
+        throw new ForbiddenError('Карточка уже была удалена или нет прав доступа');
+      }
+      res.send({ message: 'Карточка успешно удалена' });
+    })
+    .catch((err) => {
+      if (err.name === 'ForbiddenError') {
+        next(err);
+      } else {
+        next(new NotFoundError('Карточка не найдена или у вас нет прав на ее удаление'));
+      }
+    });
+};
+
+/* module.exports.deleteCard = (req, res, next) => {
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
+
+  Card
+    .deleteOne({ _id: cardId, owner: userId })
+    .then((result) => {
+      if (result.deletedCount === 0) {
         throw new NotFoundError(
           'Карточка не найдена или у вас нет прав на ее удаление',
         );
@@ -50,6 +72,7 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch(next);
 };
+*/
 
 // Ставим лайк на карточку:
 module.exports.likeCard = (req, res, next) => {
