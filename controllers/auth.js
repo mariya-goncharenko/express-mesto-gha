@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-const { SECRET_SIGNING_KEY } = require('../utils/constants');
+const config = require('../config');
 
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
@@ -51,9 +51,10 @@ module.exports.registrationUser = (req, res, next) => {
 module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  User
+    .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
-      const token = jwt.sign({ userId }, SECRET_SIGNING_KEY, {
+      const token = jwt.sign({ userId }, config.SECRET_SIGNING_KEY, {
         expiresIn: '7d',
       });
       return res.send({ token });

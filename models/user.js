@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const { Schema } = mongoose;
 
-const { URL_REGEX } = require('../utils/constants');
+const config = require('../config');
 
 const userSchema = new Schema(
   {
@@ -42,7 +42,7 @@ const userSchema = new Schema(
       default:
         'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
       validate: {
-        validator: (url) => URL_REGEX.test(url),
+        validator: (url) => config.URL_REGEX.test(url),
         message: 'Требуется ввести URL',
       },
     },

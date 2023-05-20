@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-const { SECRET_SIGNING_KEY } = require('../utils/constants');
+const config = require('../config');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports = (req, _, next) => {
@@ -16,7 +15,7 @@ module.exports = (req, _, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, SECRET_SIGNING_KEY);
+    payload = jwt.verify(token, config.SECRET_SIGNING_KEY);
   } catch (err) {
     return next(new UnauthorizedError(`${errorMsg}!`));
   }
