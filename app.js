@@ -8,17 +8,34 @@ const config = require('./config');
 const rootRouter = require('./routes');
 
 mongoose.set('strictQuery', true);
-mongoose.connect(config.DB_URL);
+
+mongoose
+  .connect(URL)
+  .then(() => {
+    console.log('БД подключена');
+  })
+  .catch(() => {
+    console.log('Не удалось подключиться к БД');
+  });
 
 const app = express();
 
 app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(limiter);
-app.use(rootRouter);
 
+app.use('/', routeSignup);
+app.use('/', routeSignin);
+
+app.use(auth);
+
+app.use('/users', routeUsers);
+app.use('/cards', routeCards);
+
+app.use((req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
 app.use(errors());
 app.use(errorHandler);
 
