@@ -26,7 +26,7 @@ module.exports.getUserId = (req, res, next) => {
   findUserById(id)
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof 'CastError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при поиске пользователя',
@@ -66,7 +66,7 @@ module.exports.updateUserProfile = (req, res, next) => {
   updateUserProfileData(userId, { name, about })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля',
@@ -86,7 +86,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   updateUserProfileData(userId, { avatar })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при обновлении профиля пользователя',

@@ -22,7 +22,7 @@ module.exports.createCard = (req, res, next) => {
     .create({ name, link, owner: userId })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof 'ValidationError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при создании карточки',
@@ -89,7 +89,7 @@ module.exports.likeCard = (req, res, next) => {
       throw new NotFoundError('Карточка с указанным id не найдена');
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof 'CastError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при добавлении лайка карточке',
@@ -124,7 +124,7 @@ module.exports.deleteLikeCard = (req, res, next) => {
       throw new NotFoundError('Данные по указанному id не найдены');
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof 'CastError') {
         next(
           new BadRequestError(
             'Переданы некорректные данные при снятии лайка карточки',
