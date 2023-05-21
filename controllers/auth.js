@@ -54,13 +54,10 @@ module.exports.loginUser = (req, res, next) => {
   User
     .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
-      const token = jwt.sign({ userId }, config.SECRET_SIGNING_KEY, {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign({ userId }, config.SECRET_SIGNING_KEY, { expiresIn: '7d' });
       return res.send({ token });
     })
     .catch(() => {
-      throw new UnauthorizedError('Неправильные почта или пароль');
-    })
-    .catch(next);
+      next(new UnauthorizedError('Неправильные почта или пароль'));
+    });
 };

@@ -57,15 +57,16 @@ const userSchema = new Schema(
           .then((user) => {
             if (user) {
               return bcrypt.compare(password, user.password).then((matched) => {
-                if (matched) return user;
-
-                return Promise.reject(new Error('Неправильные почта или пароль'));
+                if (matched) {
+                  return user;
+                }
+                throw new Error('Неправильные почта или пароль');
               });
             }
-
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            throw new Error('Неправильные почта или пароль');
           });
       },
+
     },
   },
 );

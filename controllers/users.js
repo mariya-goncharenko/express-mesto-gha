@@ -58,7 +58,12 @@ const updateUserProfileData = (userId, data) => User.findByIdAndUpdate(userId, d
   if (user) {
     return user;
   }
-  throw new NotFoundError('Пользователь c указанным _id не найден');
+  throw new NotFoundError('Пользователь с указанным _id не найден');
+}).catch((err) => {
+  if (err instanceof ValidationError) {
+    throw new BadRequestError('Переданы некорректные данные при обновлении информации');
+  }
+  throw err;
 });
 
 // Обновление данных пользователя
@@ -68,17 +73,7 @@ module.exports.updateUserProfile = (req, res, next) => {
 
   updateUserProfileData(userId, { name, about })
     .then((user) => res.send({ user }))
-    .catch((err) => {
-      if (err instanceof ValidationError) {
-        next(
-          new BadRequestError(
-            'Переданы некорректные данные при обновлении профиля',
-          ),
-        );
-      } else {
-        next(err);
-      }
-    });
+    .catch((err) => next(err));
 };
 
 // Обновление аватара пользователя
@@ -88,15 +83,5 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
   updateUserProfileData(userId, { avatar })
     .then((user) => res.send({ user }))
-    .catch((err) => {
-      if (err instanceof ValidationError) {
-        next(
-          new BadRequestError(
-            'Переданы некорректные данные при обновлении профиля пользователя',
-          ),
-        );
-      } else {
-        next(err);
-      }
-    });
+    .catch((err) => next(err));
 };
